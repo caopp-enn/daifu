@@ -248,10 +248,10 @@
     <div id="paypal-button-container"></div>
   </div>
 
-  <!-- 修正后的PayPal支付代码 -->
-  <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&locale=en_US&intent=capture&commit=true"></script>
+  <!-- Simplified PayPal Integration -->
+  <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&locale=en_US&disable-funding=credit,paylater&intent=capture"></script>
   <script>
-    // 购物车功能
+    // Shopping cart functionality
     const cart = [];
     document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', () => {
@@ -263,7 +263,6 @@
         cart.push({ name, price, image });
         updateCart();
         
-        // 加入动画效果
         button.textContent = "✓ Added";
         setTimeout(() => {
           button.textContent = "Add to Cart";
@@ -299,7 +298,7 @@
       cartCount.textContent = cart.length;
     }
 
-    // 修正后的PayPal支付代码
+    // Simplified PayPal Payment
     document.getElementById('checkout').addEventListener('click', () => {
       if (cart.length === 0) return alert('Please add items to your cart first!');
       
@@ -308,55 +307,35 @@
           layout: 'vertical',
           color: 'gold',
           shape: 'rect',
-          label: 'checkout',  // 强制显示英文
+          label: 'pay',
           height: 45,
-          tagline: false      // 隐藏额外文字
+          tagline: false
         },
         createOrder: (data, actions) => {
           return actions.order.create({
             application_context: {
-              shipping_preference: "GET_FROM_FILE", // 允许选择国家
-              user_action: "CONTINUE"              // 确保显示完整表单
+              shipping_preference: "NO_SHIPPING" // Disable shipping address
             },
             purchase_units: [{
               amount: {
                 value: document.getElementById('total').textContent,
-                currency_code: "USD",
-                breakdown: {
-                  item_total: {
-                    value: document.getElementById('total').textContent,
-                    currency_code: "USD"
-                  }
-                }
-              },
-              items: cart.map(item => ({
-                name: item.name,
-                unit_amount: {
-                  value: item.price,
-                  currency_code: "USD"
-                },
-                quantity: "1"
-              }))
+                currency_code: "USD"
+              }
             }]
           });
         },
         onApprove: (data, actions) => {
           return actions.order.capture().then(details => {
-            alert(`Payment Successful!\nOrder ID: ${details.id}\nAmount: $${document.getElementById('total').textContent}`);
+            alert(`Payment Successful!\nOrder ID: ${details.id}`);
             cart.length = 0;
             updateCart();
           });
-        },
-        onError: (err) => {
-          console.error(err);
-          alert('Payment error occurred, please try again');
         }
       }).render('#paypal-button-container');
     });
 
-    // 语言选择器功能
+    // Language selector
     document.getElementById('language-select').addEventListener('change', (e) => {
-      // 实际项目中这里应该加载对应语言包
       alert('Language changed to: ' + e.target.value);
     });
   </script>
