@@ -191,15 +191,13 @@
   <div class="language-selector">
     <select id="language-select">
       <option value="en">English</option>
-      <option value="es">Español</option>
-      <option value="fr">Français</option>
-      <option value="de">Deutsch</option>
+      <option value="zh">中文</option>
     </select>
   </div>
 
   <header>
-    <h1>🌎 Global Snack Vending</h1>
-    <p>Premium snacks delivered worldwide</p>
+    <h1 id="page-title">🌎 Global Snack Vending</h1>
+    <p id="page-subtitle">Premium snacks delivered worldwide</p>
   </header>
   
   <!-- Product List -->
@@ -235,13 +233,13 @@
   <!-- Shopping Cart -->
   <div class="cart-container">
     <div class="cart-header">
-      <h2 class="cart-title">🛒 My Cart</h2>
-      <span id="cart-count">0</span> items
+      <h2 class="cart-title" id="cart-title-text">🛒 My Cart</h2>
+      <span id="cart-count">0</span> <span id="items-text">items</span>
     </div>
     
     <ul id="cart-items"></ul>
     
-    <p class="cart-total">Total: $<span id="total">0.00</span></p>
+    <p class="cart-total"><span id="total-text">Total</span>: $<span id="total">0.00</span></p>
     
     <button id="checkout">Proceed to Checkout</button>
     
@@ -251,25 +249,107 @@
   <!-- Simplified PayPal Integration -->
   <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&locale=en_US&disable-funding=credit,paylater&intent=capture"></script>
   <script>
-    // Shopping cart functionality
-    const cart = [];
-    document.querySelectorAll('.add-to-cart').forEach(button => {
-      button.addEventListener('click', () => {
-        const product = button.closest('.product-card');
-        const name = product.querySelector('.product-name').textContent;
-        const price = parseFloat(product.dataset.price);
-        const image = product.querySelector('.product-image').src;
-        
-        cart.push({ name, price, image });
-        updateCart();
-        
-        button.textContent = "✓ Added";
-        setTimeout(() => {
-          button.textContent = "Add to Cart";
-        }, 1000);
-      });
-    });
+    // 翻译内容
+    const translations = {
+      en: {
+        title: "🌎 Global Snack Vending",
+        subtitle: "Premium snacks delivered worldwide",
+        products: [
+          "Refreshing Cola",
+          "Crunchy Chips",
+          "Smooth Chocolate"
+        ],
+        cartTitle: "🛒 My Cart",
+        items: "items",
+        total: "Total",
+        checkout: "Proceed to Checkout",
+        addToCart: "Add to Cart",
+        added: "✓ Added",
+        emptyCart: "Please add items to your cart first!",
+        paymentSuccess: "Payment Successful!\nOrder ID: "
+      },
+      zh: {
+        title: "🌎 全球零食自动售货",
+        subtitle: "全球配送的优质零食",
+        products: [
+          "清爽可乐",
+          "香脆薯片",
+          "丝滑巧克力"
+        ],
+        cartTitle: "🛒 我的购物车",
+        items: "件商品",
+        total: "总计",
+        checkout: "去结算",
+        addToCart: "加入购物车",
+        added: "✓ 已添加",
+        emptyCart: "请先添加商品到购物车！",
+        paymentSuccess: "支付成功！\n订单号: "
+      }
+    };
 
+    let currentLanguage = 'en';
+    const cart = [];
+    
+    // 初始化页面
+    function initPage() {
+      updateLanguage();
+      setupEventListeners();
+    }
+    
+    // 更新语言
+    function updateLanguage() {
+      const lang = translations[currentLanguage];
+      
+      // 更新页面元素
+      document.getElementById('page-title').textContent = lang.title;
+      document.getElementById('page-subtitle').textContent = lang.subtitle;
+      document.getElementById('cart-title-text').textContent = lang.cartTitle;
+      document.getElementById('items-text').textContent = lang.items;
+      document.getElementById('total-text').textContent = lang.total;
+      document.getElementById('checkout').textContent = lang.checkout;
+      
+      // 更新产品名称
+      document.querySelectorAll('.product-name').forEach((el, index) => {
+        el.textContent = lang.products[index];
+      });
+      
+      // 更新购物车按钮
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.textContent = lang.addToCart;
+      });
+    }
+    
+    // 设置事件监听器
+    function setupEventListeners() {
+      // 语言切换
+      document.getElementById('language-select').addEventListener('change', (e) => {
+        currentLanguage = e.target.value;
+        updateLanguage();
+      });
+      
+      // 添加到购物车
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.addEventListener('click', () => {
+          const product = button.closest('.product-card');
+          const name = product.querySelector('.product-name').textContent;
+          const price = parseFloat(product.dataset.price);
+          const image = product.querySelector('.product-image').src;
+          
+          cart.push({ name, price, image });
+          updateCart();
+          
+          button.textContent = translations[currentLanguage].added;
+          setTimeout(() => {
+            button.textContent = translations[currentLanguage].addToCart;
+          }, 1000);
+        });
+      });
+      
+      // 结算按钮
+      document.getElementById('checkout').addEventListener('click', checkout);
+    }
+    
+    // 更新购物车
     function updateCart() {
       const cartItems = document.getElementById('cart-items');
       const totalElement = document.getElementById('total');
@@ -297,10 +377,13 @@
       totalElement.textContent = total.toFixed(2);
       cartCount.textContent = cart.length;
     }
-
-    // Simplified PayPal Payment
-    document.getElementById('checkout').addEventListener('click', () => {
-      if (cart.length === 0) return alert('Please add items to your cart first!');
+    
+    // 结算功能
+    function checkout() {
+      if (cart.length === 0) {
+        alert(translations[currentLanguage].emptyCart);
+        return;
+      }
       
       paypal.Buttons({
         style: {
@@ -314,7 +397,8 @@
         createOrder: (data, actions) => {
           return actions.order.create({
             application_context: {
-              shipping_preference: "NO_SHIPPING" // Disable shipping address
+              shipping_preference: "NO_SHIPPING",
+              user_action: "PAY_NOW"
             },
             purchase_units: [{
               amount: {
@@ -326,18 +410,16 @@
         },
         onApprove: (data, actions) => {
           return actions.order.capture().then(details => {
-            alert(`Payment Successful!\nOrder ID: ${details.id}`);
+            alert(translations[currentLanguage].paymentSuccess + details.id);
             cart.length = 0;
             updateCart();
           });
         }
       }).render('#paypal-button-container');
-    });
-
-    // Language selector
-    document.getElementById('language-select').addEventListener('change', (e) => {
-      alert('Language changed to: ' + e.target.value);
-    });
+    }
+    
+    // 初始化页面
+    initPage();
   </script>
 </body>
 </html>
