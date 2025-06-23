@@ -436,6 +436,7 @@
 
     let currentLanguage = 'en';
     const cart = [];
+    let paypalButtonsRendered = false;
     
     // 初始化页面
     function initPage() {
@@ -597,6 +598,10 @@
         alert(translations[currentLanguage].emptyCart);
         return;
       }
+      
+      // 清除现有的PayPal按钮
+      const paypalContainer = document.getElementById('paypal-button-container');
+      paypalContainer.innerHTML = '';
       
       paypal.Buttons({
         style: {
