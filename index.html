@@ -230,15 +230,6 @@
         <button class="add-to-cart">Add to Cart</button>
       </div>
     </div>
-    
-    <div class="product-card" data-price="2.49">
-      <img src="https://images.unsplash.com/photo-1587135991058-8816a6a7e7a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Cookies" class="product-image">
-      <div class="product-info">
-        <h3 class="product-name">Cream Cookies</h3>
-        <p class="product-price">$2.49</p>
-        <button class="add-to-cart">Add to Cart</button>
-      </div>
-    </div>
   </div>
 
   <!-- Shopping Cart -->
@@ -257,41 +248,10 @@
     <div id="paypal-button-container"></div>
   </div>
 
-  <!-- PayPal Integration with International Support -->
- <!-- 修改PayPal SDK加载部分 -->
- <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&locale=en_US"></script>
-
-<script>
-  document.getElementById('checkout').addEventListener('click', () => {
-    paypal.Buttons({
-      style: {
-        layout: 'vertical',
-        color: 'gold',
-        shape: 'rect',
-        label: "checkout",  // 强制英文标签
-        height: 45
-      },
-      createOrder: function(data, actions) {
-        return actions.order.create({
-          application_context: {
-            shipping_preference: "GET_FROM_FILE" // 允许选择国家
-          },
-          purchase_units: [{
-            amount: {
-              value: document.getElementById('total').textContent
-            }
-          }]
-        });
-      },
-      onApprove: function(data, actions) {
-        return actions.order.capture().then(details => {
-          alert('Payment completed! Order ID: ' + details.id);
-        });
-      }
-    }).render('#paypal-button-container');
-  });
-</script>
-    // Shopping cart functionality
+  <!-- 修正后的PayPal支付代码 -->
+  <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&locale=en_US&intent=capture&commit=true"></script>
+  <script>
+    // 购物车功能
     const cart = [];
     document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', () => {
@@ -303,7 +263,7 @@
         cart.push({ name, price, image });
         updateCart();
         
-        // Animation feedback
+        // 加入动画效果
         button.textContent = "✓ Added";
         setTimeout(() => {
           button.textContent = "Add to Cart";
@@ -339,7 +299,7 @@
       cartCount.textContent = cart.length;
     }
 
-    // PayPal Payment with International Support
+    // 修正后的PayPal支付代码
     document.getElementById('checkout').addEventListener('click', () => {
       if (cart.length === 0) return alert('Please add items to your cart first!');
       
@@ -348,13 +308,15 @@
           layout: 'vertical',
           color: 'gold',
           shape: 'rect',
-          label: 'paypal',
-          height: 45
+          label: 'checkout',  // 强制显示英文
+          height: 45,
+          tagline: false      // 隐藏额外文字
         },
         createOrder: (data, actions) => {
           return actions.order.create({
             application_context: {
-              shipping_preference: "GET_FROM_FILE" // Allow address selection
+              shipping_preference: "GET_FROM_FILE", // 允许选择国家
+              user_action: "CONTINUE"              // 确保显示完整表单
             },
             purchase_units: [{
               amount: {
@@ -392,9 +354,9 @@
       }).render('#paypal-button-container');
     });
 
-    // Language selector functionality
+    // 语言选择器功能
     document.getElementById('language-select').addEventListener('change', (e) => {
-      // This would be expanded with actual translations in a real implementation
+      // 实际项目中这里应该加载对应语言包
       alert('Language changed to: ' + e.target.value);
     });
   </script>
