@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>我的虚拟售货机</title>
+  <style>
+    body { font-family: Arial; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .product { border: 1px solid #ddd; padding: 15px; margin: 10px; text-align: center; display: inline-block; width: 120px; }
+    .product img { width: 80px; height: 80px; object-fit: cover; }
+    #cart { background: #f5f5f5; padding: 15px; margin-top: 20px; }
+    #paypal-button-container { margin-top: 20px; }
+    button { background: #0070ba; color: white; border: none; padding: 8px 15px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>🍟 虚拟零食售货机</h1>
+  
+  <!-- 商品列表 -->
+  <div>
+    <div class="product" data-price="2.99">
+      <img src="https://via.placeholder.com/80?text=可乐" alt="可乐">
+      <h3>可乐</h3>
+      <p>$2.99</p>
+      <button class="add-to-cart">加入购物车</button>
+    </div>
+    <div class="product" data-price="1.99">
+      <img src="https://via.placeholder.com/80?text=薯片" alt="薯片">
+      <h3>薯片</h3>
+      <p>$1.99</p>
+      <button class="add-to-cart">加入购物车</button>
+    </div>
+  </div>
+
+  <!-- 购物车 -->
+  <div id="cart">
+    <h2>🛒 购物车</h2>
+    <ul id="cart-items"></ul>
+    <p>总价: $<span id="total">0.00</span></p>
+    <button id="checkout">去结算</button>
+    <div id="paypal-button-container"></div>
+  </div>
+
+  <!-- PayPal支付代码 -->
+  <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+  <script>
+    // 购物车功能
+    const cart = [];
+    document.querySelectorAll('.add-to-cart').forEach(button => {
+      button.addEventListener('click', () => {
+        const product = button.closest('.product');
+        const name = product.querySelector('h3').textContent;
+        const price = parseFloat(product.dataset.price);
+        cart.push({ name, price });
+        updateCart();
+      });
+    });
+
+    function updateCart() {
+      const cartItems = document.getElementById('cart-items');
+      const totalElement = document.getElementById('total');
+      cartItems.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.name} - $${item.price.toFixed(2)}`;
+        cartItems.appendChild(li);
+        total += item.price;
+      });
+      totalElement.textContent = total.toFixed(2);
+    }
+
+    // PayPal支付
+    document.getElementById('checkout').addEventListener('click', () => {
+      if (cart.length === 0) return alert('请先添加商品！');
+      paypal.Buttons({
+        createOrder: (data, actions) => {
+          return actions.order.create({
+            purchase_units: [{
+              amount: {
+                value: document.getElementById('total').textContent
+              }
+            }]
+          });
+        },
+        onApprove: (data, actions) => {
+          return actions.order.capture().then(details => {
+            alert(`支付成功！订单号: ${details.id}`);
+            cart.length = 0;
+            updateCart();
+          });
+        }
+      }).render('#paypal-button-container');
+    });
+  </script>
+</body>
+</html>
