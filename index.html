@@ -258,8 +258,39 @@
   </div>
 
   <!-- PayPal Integration with International Support -->
-  <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&intent=capture&commit=true"></script>
-  <script>
+ <!-- 修改PayPal SDK加载部分 -->
+ <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&locale=en_US"></script>
+
+<script>
+  document.getElementById('checkout').addEventListener('click', () => {
+    paypal.Buttons({
+      style: {
+        layout: 'vertical',
+        color: 'gold',
+        shape: 'rect',
+        label: "checkout",  // 强制英文标签
+        height: 45
+      },
+      createOrder: function(data, actions) {
+        return actions.order.create({
+          application_context: {
+            shipping_preference: "GET_FROM_FILE" // 允许选择国家
+          },
+          purchase_units: [{
+            amount: {
+              value: document.getElementById('total').textContent
+            }
+          }]
+        });
+      },
+      onApprove: function(data, actions) {
+        return actions.order.capture().then(details => {
+          alert('Payment completed! Order ID: ' + details.id);
+        });
+      }
+    }).render('#paypal-button-container');
+  });
+</script>
     // Shopping cart functionality
     const cart = [];
     document.querySelectorAll('.add-to-cart').forEach(button => {
