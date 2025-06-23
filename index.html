@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>虚拟零食售货机</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Snack Vending Machine</title>
   <style>
     :root {
       --primary: #2563eb;
@@ -161,7 +162,14 @@
       margin-top: 16px;
     }
     
-    /* 响应式调整 */
+    /* Language selector */
+    .language-selector {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+    
+    /* Responsive adjustments */
     @media (max-width: 480px) {
       .products-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -170,74 +178,89 @@
       h1 {
         font-size: 1.5rem;
       }
+      
+      .language-selector {
+        position: static;
+        margin-bottom: 15px;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="language-selector">
+    <select id="language-select">
+      <option value="en">English</option>
+      <option value="es">Español</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+    </select>
+  </div>
+
   <header>
-    <h1>🍿 虚拟零食售货机</h1>
-    <p>精选美味零食，一键购买</p>
+    <h1>🌎 Global Snack Vending</h1>
+    <p>Premium snacks delivered worldwide</p>
   </header>
   
-  <!-- 商品列表 -->
+  <!-- Product List -->
   <div class="products-grid">
     <div class="product-card" data-price="2.99">
-      <img src="https://images.unsplash.com/photo-1554866585-cd94860890b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="可乐" class="product-image">
+      <img src="https://images.unsplash.com/photo-1554866585-cd94860890b7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Cola" class="product-image">
       <div class="product-info">
-        <h3 class="product-name">冰爽可乐</h3>
+        <h3 class="product-name">Refreshing Cola</h3>
         <p class="product-price">$2.99</p>
-        <button class="add-to-cart">加入购物车</button>
+        <button class="add-to-cart">Add to Cart</button>
       </div>
     </div>
     
     <div class="product-card" data-price="1.99">
-      <img src="https://images.unsplash.com/photo-1576479556460-2d5e258f118f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="薯片" class="product-image">
+      <img src="https://images.unsplash.com/photo-1576479556460-2d5e258f118f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Chips" class="product-image">
       <div class="product-info">
-        <h3 class="product-name">香脆薯片</h3>
+        <h3 class="product-name">Crunchy Chips</h3>
         <p class="product-price">$1.99</p>
-        <button class="add-to-cart">加入购物车</button>
+        <button class="add-to-cart">Add to Cart</button>
       </div>
     </div>
     
     <div class="product-card" data-price="3.49">
-      <img src="https://images.unsplash.com/photo-1587234378159-8f8f787a8a72?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="巧克力" class="product-image">
+      <img src="https://images.unsplash.com/photo-1587234378159-8f8f787a8a72?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Chocolate" class="product-image">
       <div class="product-info">
-        <h3 class="product-name">丝滑巧克力</h3>
+        <h3 class="product-name">Smooth Chocolate</h3>
         <p class="product-price">$3.49</p>
-        <button class="add-to-cart">加入购物车</button>
+        <button class="add-to-cart">Add to Cart</button>
       </div>
     </div>
     
     <div class="product-card" data-price="2.49">
-      <img src="https://images.unsplash.com/photo-1587135991058-8816a6a7e7a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="饼干" class="product-image">
+      <img src="https://images.unsplash.com/photo-1587135991058-8816a6a7e7a9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" alt="Cookies" class="product-image">
       <div class="product-info">
-        <h3 class="product-name">奶油饼干</h3>
+        <h3 class="product-name">Cream Cookies</h3>
         <p class="product-price">$2.49</p>
-        <button class="add-to-cart">加入购物车</button>
+        <button class="add-to-cart">Add to Cart</button>
       </div>
     </div>
   </div>
 
-  <!-- 购物车 -->
+  <!-- Shopping Cart -->
   <div class="cart-container">
     <div class="cart-header">
-      <h2 class="cart-title">🛒 我的购物车</h2>
-      <span id="cart-count">0</span>件
+      <h2 class="cart-title">🛒 My Cart</h2>
+      <span id="cart-count">0</span> items
     </div>
     
     <ul id="cart-items"></ul>
     
-    <p class="cart-total">总价: $<span id="total">0.00</span></p>
+    <p class="cart-total">Total: $<span id="total">0.00</span></p>
     
-    <button id="checkout">前往结算</button>
+    <button id="checkout">Proceed to Checkout</button>
     
     <div id="paypal-button-container"></div>
   </div>
 
-  <!-- PayPal支付代码 -->
-  <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+  <!-- PayPal Integration with International Support -->
+  <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD&intent=capture&commit=true"></script>
   <script>
-    // 购物车功能
+    // Shopping cart functionality
     const cart = [];
     document.querySelectorAll('.add-to-cart').forEach(button => {
       button.addEventListener('click', () => {
@@ -249,10 +272,10 @@
         cart.push({ name, price, image });
         updateCart();
         
-        // 加入动画效果
-        button.textContent = "✓ 已添加";
+        // Animation feedback
+        button.textContent = "✓ Added";
         setTimeout(() => {
-          button.textContent = "加入购物车";
+          button.textContent = "Add to Cart";
         }, 1000);
       });
     });
@@ -285,26 +308,31 @@
       cartCount.textContent = cart.length;
     }
 
-    // PayPal支付
+    // PayPal Payment with International Support
     document.getElementById('checkout').addEventListener('click', () => {
-      if (cart.length === 0) return alert('请先添加商品！');
+      if (cart.length === 0) return alert('Please add items to your cart first!');
       
       paypal.Buttons({
         style: {
           layout: 'vertical',
           color: 'gold',
           shape: 'rect',
-          label: 'paypal'
+          label: 'paypal',
+          height: 45
         },
         createOrder: (data, actions) => {
           return actions.order.create({
+            application_context: {
+              shipping_preference: "GET_FROM_FILE" // Allow address selection
+            },
             purchase_units: [{
               amount: {
                 value: document.getElementById('total').textContent,
+                currency_code: "USD",
                 breakdown: {
                   item_total: {
                     value: document.getElementById('total').textContent,
-                    currency_code: 'USD'
+                    currency_code: "USD"
                   }
                 }
               },
@@ -312,25 +340,31 @@
                 name: item.name,
                 unit_amount: {
                   value: item.price,
-                  currency_code: 'USD'
+                  currency_code: "USD"
                 },
-                quantity: '1'
+                quantity: "1"
               }))
             }]
           });
         },
         onApprove: (data, actions) => {
           return actions.order.capture().then(details => {
-            alert(`支付成功！\n订单号: ${details.id}\n金额: $${document.getElementById('total').textContent}`);
+            alert(`Payment Successful!\nOrder ID: ${details.id}\nAmount: $${document.getElementById('total').textContent}`);
             cart.length = 0;
             updateCart();
           });
         },
         onError: (err) => {
           console.error(err);
-          alert('支付过程中出错，请重试');
+          alert('Payment error occurred, please try again');
         }
       }).render('#paypal-button-container');
+    });
+
+    // Language selector functionality
+    document.getElementById('language-select').addEventListener('change', (e) => {
+      // This would be expanded with actual translations in a real implementation
+      alert('Language changed to: ' + e.target.value);
     });
   </script>
 </body>
